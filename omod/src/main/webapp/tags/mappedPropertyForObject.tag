@@ -10,6 +10,7 @@
 <%@tag import="org.openmrs.module.reporting.web.taglib.FormatTag"%>
 
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <%@ attribute name="id" required="true" type="java.lang.String" %>
 <%@ attribute name="formFieldName" required="true" type="java.lang.String" %>

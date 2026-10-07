@@ -41,7 +41,6 @@ import org.openmrs.util.PrivilegeConstants;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -116,8 +115,6 @@ public class ReportServiceAuthorizationTest extends BaseModuleContextSensitiveTe
 		// modified User attached, so authenticating as admin fails - and the inherited authenticate()
 		// reacts to that failure by prompting for credentials on stdin, which would hang the build.
 		Context.logout();
-		// Removes the data committed by authenticateWithReportingPrivileges
-		deleteAllData();
 	}
 
 	private ReportService getReportService() {
@@ -156,14 +153,6 @@ public class ReportServiceAuthorizationTest extends BaseModuleContextSensitiveTe
 		String password = "Test1234";
 		userService.createUser(user, password);
 		Context.flushSession();
-		// Core resolves role privileges on a separate thread with its own session, which cannot see rows
-		// left uncommitted in the test transaction, so commit them (and delete them again after the test)
-		try {
-			getConnection().commit();
-		}
-		catch (SQLException e) {
-			throw new IllegalStateException("Unable to commit the test user", e);
-		}
 
 		Context.logout();
 		Context.authenticate(user.getUsername(), password);

@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -51,16 +50,9 @@ public class EncounterCohortDefinitionEvaluatorTest extends BaseModuleContextSen
 	public void setup() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(XML_DATASET_PATH + new TestUtil().getTestDatasetFilename(XML_REPORT_TEST_DATASET));
-		// commit, as core resolves role privileges on a separate thread that cannot see uncommitted rows
-		getConnection().commit();
 		authenticate();
 	}
 
-	@AfterEach
-	public void tearDown() {
-		// removes the data committed in setup
-		deleteAllData();
-	}
 	
 	/**
 	 * @see {@link EncounterCohortDefinitionEvaluator#evaluate(CohortDefinition,EvaluationContext)}

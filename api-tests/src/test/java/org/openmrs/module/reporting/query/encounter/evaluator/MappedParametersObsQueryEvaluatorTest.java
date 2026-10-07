@@ -9,7 +9,6 @@
  */
 package org.openmrs.module.reporting.query.encounter.evaluator;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
@@ -43,15 +42,7 @@ public class MappedParametersObsQueryEvaluatorTest extends BaseModuleContextSens
     public void setup() throws Exception {
         initializeInMemoryDatabase();
         executeDataSet(XML_DATASET_PATH + new TestUtil().getTestDatasetFilename(XML_REPORT_TEST_DATASET));
-        // commit, as core resolves role privileges on a separate thread that cannot see uncommitted rows
-        getConnection().commit();
         authenticate();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        // removes the data committed in setup
-        deleteAllData();
     }
 
     @Test

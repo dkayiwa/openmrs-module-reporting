@@ -40,6 +40,9 @@ public class VelocityTemplateEngine implements TemplateEngine {
 			ve.setProperty(RuntimeConstants.PARSER_HYPHEN_ALLOWED, true);
 			ve.setProperty(RuntimeConstants.SPACE_GOBBLING, "bc");
 			ve.setProperty(RuntimeConstants.CHECK_EMPTY_OBJECTS, false);
+			ve.setProperty(RuntimeConstants.VM_ENABLE_BC_MODE, true);
+			ve.setProperty(RuntimeConstants.CONVERSION_HANDLER_CLASS, "none");
+			ve.setProperty(RuntimeConstants.IMMUTABLE_RANGES, false);
 			ve.init();
 			VelocityContext velocityContext = new VelocityContext();
 			for (Map.Entry<String, Object> e : bindings.entrySet()) {

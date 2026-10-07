@@ -12,7 +12,6 @@ package org.openmrs.module.reporting.query.obs.evaluator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
@@ -39,15 +38,7 @@ public class SqlObsQueryEvaluatorTest extends BaseModuleContextSensitiveTest {
 	public void setup() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/module/reporting/include/" + new TestUtil().getTestDatasetFilename("ReportTestDataset"));
-		// commit, as core resolves role privileges on a separate thread that cannot see uncommitted rows
-		getConnection().commit();
 		authenticate();
-	}
-
-	@AfterEach
-	public void tearDown() {
-		// removes the data committed in setup
-		deleteAllData();
 	}
 
 	@Test
