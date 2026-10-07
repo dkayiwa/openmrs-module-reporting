@@ -45,7 +45,7 @@
 		<calculationVersion>3.0.0-SNAPSHOT</calculationVersion>
 		<quartzVersion>2.1.1</quartzVersion>
 		<poiVersion>3.12</poiVersion>
-		<handlebarsVersion>4.3.1</handlebarsVersion>
+		<handlebarsVersion>4.5.5</handlebarsVersion>
 		<openhtmltopdfVersion>1.0.10</openhtmltopdfVersion>
 		<zxingVersion>3.5.3</zxingVersion>
 		<openmrsTestutilsVersion>1.7.0</openmrsTestutilsVersion>
@@ -136,6 +136,15 @@
                 <exclusion>
                     <groupId>org.openjdk.nashorn</groupId>
                     <artifactId>nashorn-core</artifactId>
+                </exclusion>
+                <!-- provided by core -->
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-text</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

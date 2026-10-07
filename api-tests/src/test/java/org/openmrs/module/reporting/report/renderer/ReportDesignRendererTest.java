@@ -59,6 +59,20 @@ public class ReportDesignRendererTest extends BaseModuleContextSensitiveTest {
         assertThat(filenameBase, is("20140701-Test Report"));
     }
 
+    @Test
+    public void getFilenameBase_shouldNotEscapeEqualsSignsInTheReportName() throws Exception {
+        ReportDefinition definition = new ReportDefinition();
+        definition.setName("ART = Cohort");
+
+        ReportRequest request = new ReportRequest();
+        request.setEvaluateStartDatetime(DateUtil.parseYmdhms("2014-07-01 18:30:15"));
+        request.setReportDefinition(Mapped.noMappings(definition));
+        request.setRenderingMode(new RenderingMode());
+
+        String filenameBase = new TestReportDesignRenderer().getFilenameBase(request);
+        assertThat(filenameBase, is("ART = Cohort_2014-07-01_18:30:15"));
+    }
+
     /**
      * Since this class is abstract, we need a concrete class to test with
      */
