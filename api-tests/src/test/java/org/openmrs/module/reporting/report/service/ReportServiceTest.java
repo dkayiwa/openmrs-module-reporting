@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.GenderCohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.service.CohortDefinitionService;
 import org.openmrs.module.reporting.common.TestUtil;
 import org.openmrs.module.reporting.dataset.definition.CohortCrossTabDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.SqlDataSetDefinition;
@@ -45,7 +47,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -523,6 +527,42 @@ public class ReportServiceTest extends BaseModuleContextSensitiveTest {
 
 		assertNull(rs.getReportDesignByUuid("d7a82b63-1066-4c1d-9b43-b405851fc467"));
 		assertNull(rs.getReportDesignByUuid("e7a82b63-1066-4c1d-9b43-b405851fc467"));
+	}
+
+	@Test
+	public void saveReportRequest_shouldKeepMappingsAndRenderingModeInTheirColumns() throws Exception {
+		ReportService rs = Context.getService(ReportService.class);
+		ReportDefinition rd = Context.getService(ReportDefinitionService.class).getDefinitionByUuid("c11f5354-9567-4cc5-b3ef-163e28873926");
+		GenderCohortDefinition males = new GenderCohortDefinition();
+		males.setName("Males");
+		males.setMaleIncluded(true);
+		males = Context.getService(CohortDefinitionService.class).saveDefinition(males);
+		Map<String, Object> reportMappings = new HashMap<String, Object>();
+		reportMappings.put("startDate", "${start_of_last_month}");
+		Map<String, Object> cohortMappings = new HashMap<String, Object>();
+		cohortMappings.put("effectiveDate", "${endDate}");
+
+		ReportRequest request = new ReportRequest(new Mapped<ReportDefinition>(rd, reportMappings),
+				new Mapped<CohortDefinition>(males, cohortMappings),
+				new RenderingMode(new CsvReportRenderer(), "CSV", "an argument", 0), Priority.NORMAL, null);
+		request.setStatus(ReportRequest.Status.REQUESTED);
+		request = rs.saveReportRequest(request);
+		Context.flushSession();
+
+		// rows written before 3.0 must still load, so the columns must not move
+		List<Object> row = Context.getAdministrationService().executeSQL("select renderer_type, renderer_argument, "
+				+ "report_definition_uuid, base_cohort_uuid from reporting_report_request where uuid = '" + request.getUuid() + "'", true).get(0);
+		assertEquals(CsvReportRenderer.class.getName(), row.get(0));
+		assertEquals("an argument", row.get(1));
+		assertEquals(rd.getUuid(), row.get(2));
+		assertEquals(males.getUuid(), row.get(3));
+
+		Context.clearSession();
+		ReportRequest reloaded = rs.getReportRequestByUuid(request.getUuid());
+		assertTrue(reloaded.getRenderingMode().getRenderer() instanceof CsvReportRenderer);
+		assertEquals("an argument", reloaded.getRenderingMode().getArgument());
+		assertEquals(reportMappings, reloaded.getReportDefinition().getParameterMappings());
+		assertEquals(cohortMappings, reloaded.getBaseCohort().getParameterMappings());
 	}
 
 	@Test

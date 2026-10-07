@@ -477,9 +477,6 @@ public class HqlQueryBuilder implements QueryBuilder {
 
 	@Override
 	public List<Object[]> evaluateToList(DbSessionFactory sessionFactory, EvaluationContext context) {
-		// Due to hibernate bug HHH-2166, we need to make sure the HqlSqlWalker logger is not at DEBUG or TRACE level
-		OpenmrsUtil.applyLogLevel("org.hibernate.hql.ast.HqlSqlWalker", "WARN");
-        OpenmrsUtil.applyLogLevel("org.hibernate.hql.internal.ast.HqlSqlWalker", "WARN");
 		EvaluationProfiler profiler = new EvaluationProfiler(context);
 		profiler.logBefore("EXECUTING_QUERY", toString());
 		List<Object[]> ret = new ArrayList<Object[]>();
