@@ -828,7 +828,8 @@ public class HibernateCohortQueryDAO implements CohortQueryDAO {
 			Object paramValue = paramMap.get(paramName);				
 			
 			// Indicates whether we should bind this parameter in the query 
-			boolean bindParameter = (query.getQueryString().indexOf(":" + paramName) > 0);
+			// (the query string of a native query has its named parameters replaced by ?, so use the names Hibernate parsed)
+			boolean bindParameter = query.getParameterMetadata().getNamedParameterNames().contains(paramName);
 					
 			if (bindParameter) { 
 

@@ -24,7 +24,9 @@ import org.openmrs.test.Verifies;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CohortQueryServiceTest extends BaseModuleContextSensitiveTest {
 	
@@ -50,6 +52,15 @@ public class CohortQueryServiceTest extends BaseModuleContextSensitiveTest {
 		CohortQueryService service = Context.getService(CohortQueryService.class);
 		Cohort cohort = service.getPatientsHavingEncounters(null, null, TimeQualifier.ANY, null, providerList, null, null, null, null, null, null, null);
 		assertCohort(cohort, 23, 24);
+	}
+
+	@Test
+	public void executeSqlQuery_shouldBindNamedParameters() throws Exception {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("location", Context.getLocationService().getLocation(1));
+		Cohort cohort = Context.getService(CohortQueryService.class).executeSqlQuery(
+				"select distinct patient_id from encounter where location_id = :location", params);
+		assertCohort(cohort, 7);
 	}
 
 
