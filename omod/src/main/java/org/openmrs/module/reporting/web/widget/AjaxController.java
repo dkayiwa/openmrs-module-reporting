@@ -43,7 +43,7 @@ public class AjaxController {
     /**
      * Portlet Loading
      */
-    @RequestMapping({ "/module/reporting/widget/mappedProperty", "/module/reporting/widget/mappedProperty.form" })
+    @RequestMapping("/module/reporting/widget/mappedProperty")
     public void loadWidget(ModelMap model, HttpServletRequest request, HttpServletResponse response, 
 		    		@RequestParam(required=true, value="id") String id,
 		    		@RequestParam(required=true, value="type") Class<? extends Parameterizable> type,
