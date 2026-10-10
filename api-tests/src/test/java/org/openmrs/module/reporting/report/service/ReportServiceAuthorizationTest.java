@@ -9,9 +9,9 @@
  */
 package org.openmrs.module.reporting.report.service;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
@@ -35,7 +35,7 @@ import org.openmrs.module.reporting.report.definition.service.ReportDefinitionSe
 import org.openmrs.module.reporting.report.processor.LoggingReportProcessor;
 import org.openmrs.module.reporting.report.renderer.RenderingMode;
 import org.openmrs.module.reporting.report.renderer.TsvReportRenderer;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.openmrs.util.PrivilegeConstants;
 
 import java.lang.reflect.Field;
@@ -47,11 +47,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Verifies that the {@link Authorized} annotations on {@link ReportService} are actually enforced by
@@ -98,12 +98,12 @@ public class ReportServiceAuthorizationTest extends BaseModuleContextSensitiveTe
 
 	private final List<String> proxyPrivileges = new ArrayList<String>();
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		executeDataSet(XML_DATASET_PATH + new TestUtil().getTestDatasetFilename(XML_REPORT_TEST_DATASET));
 	}
 
-	@After
+	@AfterEach
 	public void restoreSuperUser() {
 		for (String privilege : proxyPrivileges) {
 			Context.removeProxyPrivilege(privilege);
@@ -163,11 +163,11 @@ public class ReportServiceAuthorizationTest extends BaseModuleContextSensitiveTe
 		// pass for the wrong reason - an APIAuthenticationException raised by some unrelated check.
 		Set<String> granted = new HashSet<String>(Arrays.asList(reportingPrivileges));
 		for (String privilegeName : granted) {
-			assertTrue("test user should hold " + privilegeName, Context.hasPrivilege(privilegeName));
+			assertTrue(Context.hasPrivilege(privilegeName), "test user should hold " + privilegeName);
 		}
 		for (String privilegeName : GRANTABLE_PRIVILEGES) {
 			if (!granted.contains(privilegeName)) {
-				assertFalse("test user should not hold " + privilegeName, Context.hasPrivilege(privilegeName));
+				assertFalse(Context.hasPrivilege(privilegeName), "test user should not hold " + privilegeName);
 			}
 		}
 	}
@@ -216,7 +216,7 @@ public class ReportServiceAuthorizationTest extends BaseModuleContextSensitiveTe
 				unannotated.add(method.getName());
 			}
 		}
-		assertTrue("ReportService methods without @Authorized privileges: " + unannotated, unannotated.isEmpty());
+		assertTrue(unannotated.isEmpty(), "ReportService methods without @Authorized privileges: " + unannotated);
 	}
 
 	/**
@@ -236,7 +236,7 @@ public class ReportServiceAuthorizationTest extends BaseModuleContextSensitiveTe
 				}
 			}
 		}
-		assertTrue("@Authorized privileges that are neither this module's nor core's: " + unknown, unknown.isEmpty());
+		assertTrue(unknown.isEmpty(), "@Authorized privileges that are neither this module's nor core's: " + unknown);
 	}
 
 	/**
@@ -258,7 +258,7 @@ public class ReportServiceAuthorizationTest extends BaseModuleContextSensitiveTe
 				offenders.add(name);
 			}
 		}
-		assertTrue("write methods must not accept View Reports: " + offenders, offenders.isEmpty());
+		assertTrue(offenders.isEmpty(), "write methods must not accept View Reports: " + offenders);
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class ReportServiceAuthorizationTest extends BaseModuleContextSensitiveTe
 				offenders.add(method.getName() + " -> " + Arrays.toString(authorized.value()));
 			}
 		}
-		assertTrue("methods requiring more than one privilege: " + offenders, offenders.isEmpty());
+		assertTrue(offenders.isEmpty(), "methods requiring more than one privilege: " + offenders);
 	}
 
 	//***** VIEW REPORTS (report consumer) *****

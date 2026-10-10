@@ -9,20 +9,20 @@
  */
 package org.openmrs.module.reporting.report.renderer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.module.reporting.common.DateUtil;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ReportDesignRendererTest extends BaseModuleContextSensitiveTest {
 
@@ -57,6 +57,20 @@ public class ReportDesignRendererTest extends BaseModuleContextSensitiveTest {
         renderer.setDesign(design);
         String filenameBase = renderer.getFilenameBase(request);
         assertThat(filenameBase, is("20140701-Test Report"));
+    }
+
+    @Test
+    public void getFilenameBase_shouldNotEscapeEqualsSignsInTheReportName() throws Exception {
+        ReportDefinition definition = new ReportDefinition();
+        definition.setName("ART = Cohort");
+
+        ReportRequest request = new ReportRequest();
+        request.setEvaluateStartDatetime(DateUtil.parseYmdhms("2014-07-01 18:30:15"));
+        request.setReportDefinition(Mapped.noMappings(definition));
+        request.setRenderingMode(new RenderingMode());
+
+        String filenameBase = new TestReportDesignRenderer().getFilenameBase(request);
+        assertThat(filenameBase, is("ART = Cohort_2014-07-01_18:30:15"));
     }
 
     /**

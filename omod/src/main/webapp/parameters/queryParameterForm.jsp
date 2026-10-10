@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp"%> 
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <openmrs:require privilege="Manage Reports" otherwise="/login.htm" redirect="/module/reporting/index.htm" />
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="springform" %>
 

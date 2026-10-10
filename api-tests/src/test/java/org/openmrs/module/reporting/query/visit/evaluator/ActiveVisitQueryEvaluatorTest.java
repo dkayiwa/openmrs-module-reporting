@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @SkipBaseSetup
 public class ActiveVisitQueryEvaluatorTest extends BaseModuleContextSensitiveTest {
@@ -52,8 +52,8 @@ public class ActiveVisitQueryEvaluatorTest extends BaseModuleContextSensitiveTes
     @BeforeEach
     public void setup() throws Exception {
         initializeInMemoryDatabase();
-        authenticate();
         executeDataSet(XML_DATASET_PATH + new TestUtil().getTestDatasetFilename(XML_REPORT_TEST_DATASET));
+        authenticate();
     }
 
     @Test

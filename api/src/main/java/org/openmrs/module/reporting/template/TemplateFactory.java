@@ -9,6 +9,7 @@
  */
 package org.openmrs.module.reporting.template;
 
+import com.github.jknack.handlebars.EscapingStrategy;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import org.openmrs.api.ConceptService;
@@ -28,7 +29,8 @@ public class TemplateFactory {
 
     private MessageSourceService mss;
 
-    private Handlebars handlebars = new Handlebars();
+    // Handlebars 4 also escapes '=', which 1.x left alone, so keep the 1.x escaping that filenames and labels were built with
+    private Handlebars handlebars = new Handlebars().with(EscapingStrategy.HBS3);
 
     @Autowired
     public TemplateFactory(@Qualifier("messageSourceService") MessageSourceService mss,
