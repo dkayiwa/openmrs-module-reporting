@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,11 +23,15 @@ public class SqlRunnerTest {
     }
 
     /**
-     * The delimiter pattern as it stood before its nested quantifier ([^\\s]+)+ was collapsed to (\\S+).
-     * Kept here only as the reference the production pattern must agree with, line for line.
+     * The delimiter pattern as it stood before it was rewritten to avoid backtracking, kept verbatim as the
+     * reference the production pattern must agree with. Its backtracking is the reason it was replaced, and
+     * here it only ever sees the short lines below.
      */
     private static final Pattern PREVIOUS_DELIMITER_PATTERN =
-            Pattern.compile("^\\s*(--)?\\s*delimiter\\s*=?\\s*([^\\s]+)+\\s*.*$", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("^\\s*(--)?\\s*delimiter\\s*=?\\s*([^\\s]+)+\\s*.*$", Pattern.CASE_INSENSITIVE); // NOSONAR
+
+    private static final String[] SQL_FRAGMENTS = { "", " ", "\t", "\n", "\r", "--", "-", "=", "delimiter", "DELIMITER",
+            "delim", "$$", ";", "//", "x", "select 1", "'", String.valueOf((char) 0x85), String.valueOf((char) 0x2028) };
 
     private static final List<String> SQL_LINES = Arrays.asList(
             "delimiter $$", "DELIMITER //", "Delimiter ;", "delimiter=$$", "delimiter = $$", "  delimiter   $$   ",
@@ -58,6 +63,21 @@ public class SqlRunnerTest {
             Matcher previous = PREVIOUS_DELIMITER_PATTERN.matcher(line);
             String expected = previous.matches() ? previous.group(2) : null;
             Assertions.assertEquals(expected, sqlRunner.getNewDelimiter(line), "line: [" + line + "]");
+        }
+    }
+
+    @Test
+    public void getNewDelimiter_shouldAgreeWithThePreviousPatternOnRandomlyAssembledLines() {
+        SqlRunner sqlRunner = new SqlRunner(null);
+        Random random = new Random(42);
+        for (int i = 0; i < 200000; i++) {
+            StringBuilder line = new StringBuilder();
+            for (int n = random.nextInt(9); n > 0; n--) {
+                line.append(SQL_FRAGMENTS[random.nextInt(SQL_FRAGMENTS.length)]);
+            }
+            Matcher previous = PREVIOUS_DELIMITER_PATTERN.matcher(line);
+            String expected = previous.matches() ? previous.group(2) : null;
+            Assertions.assertEquals(expected, sqlRunner.getNewDelimiter(line.toString()), "line: [" + line + "]");
         }
     }
 

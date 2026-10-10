@@ -29,4 +29,11 @@ public class ParameterizableUtilTest {
 		Assertions.assertEquals("Cannot retrieve Mapped type from: ReportDefinition.noSuchProperty", e.getMessage());
 		Assertions.assertNull(e.getCause(), "a missing property must be reported, not surface as " + e.getCause());
 	}
+
+	@Test
+	public void getMappedType_shouldRejectANullType() {
+		IllegalArgumentException e = Assertions.assertThrows(IllegalArgumentException.class,
+		    () -> ParameterizableUtil.getMappedType(null, "dataSetDefinitions"));
+		Assertions.assertEquals("Cannot retrieve Mapped type from: null.dataSetDefinitions", e.getMessage());
+	}
 }
